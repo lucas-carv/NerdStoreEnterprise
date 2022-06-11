@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using NSE.WebApp.MVC.Models;
 using NSE.WebApp.MVC.Services;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace NSE.WebApp.MVC.Controllers
@@ -34,7 +39,7 @@ namespace NSE.WebApp.MVC.Controllers
             if (false) return View(usuarioRegistro);
 
             // Realizar login
-            // 
+            await RealizarLogin(resposta);
             return RedirectToAction("Index", "Home");
          }
 
@@ -57,9 +62,12 @@ namespace NSE.WebApp.MVC.Controllers
             var resposta = await _autenticacaoService.Login(usuarioLogin);
 
 
-            if (false) return View(usuarioLogin);
+            //if (false) return View(usuarioLogin);
 
             // Realizar login
+
+            await RealizarLogin(resposta);
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -68,6 +76,35 @@ namespace NSE.WebApp.MVC.Controllers
         public async Task<IActionResult> Logout()
         {
             return RedirectToAction("Index", "Home");
+        }
+
+        private async Task RealizarLogin(UsuarioRespostaLogin resposta)
+        {
+
+            var token = ObterTokenFormatado(resposta.AcessToken);
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim("JWT", resposta.AcessToken)); // armazena o token dentro de uma claim
+            claims.AddRange(token.Claims);
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = System.DateTimeOffset.UtcNow.AddMinutes(60),
+                IsPersistent = true,
+            };
+
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+        }
+
+        private static JwtSecurityToken ObterTokenFormatado(string jwtToken)
+        {
+            return new JwtSecurityTokenHandler().ReadToken(jwtToken) as JwtSecurityToken;
         }
     }
 }
