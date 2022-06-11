@@ -23,12 +23,14 @@ namespace NSE.WebApp.MVC.Services
                 "application/json"// o que vc vai colocar no header da requisição ?
                 );
 
-            var response = await _httpClient.PostAsync("https://localhost:44396/api/identidade/autenticar", loginContent);
+            var response = await _httpClient.PostAsync("https://localhost:44380/api/identidade/autenticar", loginContent);
 
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
+
+            var teste = await response.Content.ReadAsStringAsync();
 
             return JsonSerializer.Deserialize<UsuarioRespostaLogin>(await response.Content.ReadAsStringAsync(), options);
         }
@@ -41,7 +43,7 @@ namespace NSE.WebApp.MVC.Services
                 "application/json"// o que vc vai colocar no header da requisição ?
                 );
 
-            var response = await _httpClient.PostAsync("https://localhost:44396/api/identidade/registrar", loginContent);
+            var response = await _httpClient.PostAsync("https://localhost:44380/api/identidade/registrar", loginContent);
 
             return JsonSerializer.Deserialize<UsuarioRespostaLogin>(await response.Content.ReadAsStringAsync());
         }

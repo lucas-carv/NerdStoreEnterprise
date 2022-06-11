@@ -81,10 +81,10 @@ namespace NSE.WebApp.MVC.Controllers
         private async Task RealizarLogin(UsuarioRespostaLogin resposta)
         {
 
-            var token = ObterTokenFormatado(resposta.AcessToken);
+            var token = ObterTokenFormatado(resposta.AccessToken);
 
             var claims = new List<Claim>();
-            claims.Add(new Claim("JWT", resposta.AcessToken)); // armazena o token dentro de uma claim
+            claims.Add(new Claim("JWT", resposta.AccessToken)); // armazena o token dentro de uma claim
             claims.AddRange(token.Claims);
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
