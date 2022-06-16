@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace NSE.WebApp.MVC.Extensions
 {
@@ -16,6 +16,7 @@ namespace NSE.WebApp.MVC.Extensions
         IEnumerable<Claim> ObterClaims();
         HttpContext ObterHttpContext();
     }
+
     public class AspNetUser : IUser
     {
         private readonly IHttpContextAccessor _accessor;

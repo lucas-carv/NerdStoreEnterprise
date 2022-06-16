@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace NSE.WebApp.MVC.Models
@@ -8,14 +7,14 @@ namespace NSE.WebApp.MVC.Models
         public int ErroCode { get; set; }
         public string Titulo { get; set; }
         public string Mensagem { get; set; }
-
     }
+
     public class ResponseResult
     {
         public string Title { get; set; }
         public int Status { get; set; }
-        public ResponseErrorMessages Erros { get; set; }
-    } 
+        public ResponseErrorMessages Errors { get; set; }
+    }
 
     public class ResponseErrorMessages
     {

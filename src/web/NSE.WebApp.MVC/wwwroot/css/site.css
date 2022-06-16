@@ -70,9 +70,10 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
+
 input,
 select,
-color-profile,
-text{
+file,
+textarea {
     max-width: 400px;
 }

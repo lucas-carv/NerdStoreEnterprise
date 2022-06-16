@@ -4,10 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSE.WebApp.MVC.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace NSE.WebApp.MVC.Configuration
 {
@@ -18,7 +14,6 @@ namespace NSE.WebApp.MVC.Configuration
             services.AddControllersWithViews();
 
             services.Configure<AppSettings>(configuration);
-
         }
 
         public static void UseMvcConfiguration(this IApplicationBuilder app, IWebHostEnvironment env)
@@ -39,7 +34,7 @@ namespace NSE.WebApp.MVC.Configuration
 
             app.UseRouting();
 
-            app.UseIdentityConfiguration(); // deve sempre ficar entre o routing e o endpoint
+            app.UseIdentityConfiguration();
 
             app.UseMiddleware<ExceptionMiddleware>();
 
@@ -50,6 +45,5 @@ namespace NSE.WebApp.MVC.Configuration
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
     }
 }

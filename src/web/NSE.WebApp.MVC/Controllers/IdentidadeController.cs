@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using NSE.WebApp.MVC.Models;
-using NSE.WebApp.MVC.Services;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using NSE.WebApp.MVC.Models;
+using NSE.WebApp.MVC.Services;
 
 namespace NSE.WebApp.MVC.Controllers
 {
@@ -30,21 +31,16 @@ namespace NSE.WebApp.MVC.Controllers
         [Route("nova-conta")]
         public async Task<IActionResult> Registro(UsuarioRegistro usuarioRegistro)
         {
-            if (!ModelState.IsValid)
-                return View(usuarioRegistro);
-
-            // API - Registro
+            if (!ModelState.IsValid) return View(usuarioRegistro);
 
             var resposta = await _autenticacaoService.Registro(usuarioRegistro);
 
-            if (ResponsePossuiErros(resposta.ResponseResult)) 
-                return View(usuarioRegistro);
+            if (ResponsePossuiErros(resposta.ResponseResult)) return View(usuarioRegistro);
 
-            // Realizar login
             await RealizarLogin(resposta);
 
             return RedirectToAction("Index", "Home");
-         }
+        }
 
         [HttpGet]
         [Route("login")]
@@ -59,23 +55,17 @@ namespace NSE.WebApp.MVC.Controllers
         public async Task<IActionResult> Login(UsuarioLogin usuarioLogin, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            if (!ModelState.IsValid)
-                return View(usuarioLogin);
+            if (!ModelState.IsValid) return View(usuarioLogin);
 
-            // API - Registro
             var resposta = await _autenticacaoService.Login(usuarioLogin);
 
-
-            if (ResponsePossuiErros(resposta.ResponseResult))
-                return View(usuarioLogin);
-
-            // Realizar login
+            if (ResponsePossuiErros(resposta.ResponseResult)) return View(usuarioLogin);
 
             await RealizarLogin(resposta);
 
-            if (string.IsNullOrEmpty(returnUrl))
-                return RedirectToAction("Index", "Home");
-            return LocalRedirect(returnUrl); 
+            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction("Index", "Home");
+
+            return LocalRedirect(returnUrl);
         }
 
         [HttpGet]
@@ -88,21 +78,19 @@ namespace NSE.WebApp.MVC.Controllers
 
         private async Task RealizarLogin(UsuarioRespostaLogin resposta)
         {
-
             var token = ObterTokenFormatado(resposta.AccessToken);
 
             var claims = new List<Claim>();
-            claims.Add(new Claim("JWT", resposta.AccessToken)); // armazena o token dentro de uma claim
+            claims.Add(new Claim("JWT", resposta.AccessToken));
             claims.AddRange(token.Claims);
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = System.DateTimeOffset.UtcNow.AddMinutes(60),
-                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
+                IsPersistent = true
             };
-
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
